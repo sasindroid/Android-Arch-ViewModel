@@ -24,7 +24,7 @@ public class ListViewModel extends ViewModel {
     private final MutableLiveData<Boolean> repoLoadError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>();
 
-    private Call<List<Repo>> repoCall
+    private Call<List<Repo>> repoCall;
 
     public ListViewModel() {
         fetchRepos();

@@ -1,5 +1,6 @@
 package com.sasi.acviewmodel.home;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -32,6 +33,7 @@ public class ListFragment extends Fragment {
     ProgressBar loading_view;
 
     private Unbinder unbinder;
+    private ListViewModel viewModel;
 
     @Nullable
     @Override
@@ -40,6 +42,58 @@ public class ListFragment extends Fragment {
         View view = inflater.inflate(R.layout.screen_list, container, false);
         unbinder = ButterKnife.bind(view);
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    // Called immediately after onCreateView
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        viewModel = ViewModelProviders.of(this).get(ListViewModel.class);
+
+        // This method will listen/observe changes coming from LiveData.
+        observeViewModel();
+    }
+
+    private void observeViewModel() {
+
+        // LifeCycleOwner is fragment here. This means if the fragment is destroyed the ViewModel will be cleared to avoid leaks.
+
+        // Before Lambda (< java 8)
+//        viewModel.getRepos().observe(this, new Observer<List<Repo>>() {
+//            @Override
+//            public void onChanged(@Nullable List<Repo> repos) {
+//
+//            }
+//        });
+
+        // With Lambda (>= java 8)
+        viewModel.getRepos().observe(this, repos -> {
+            if(repos != null) {
+                recycler_view.setVisibility(View.VISIBLE);
+
+            }
+        });
+
+        viewModel.getError().observe(this, isError -> {
+            if(isError) {
+                tv_error.setVisibility(View.VISIBLE);
+                tv_error.setText(R.string.api_error_repos);
+                recycler_view.setVisibility(View.GONE);
+            } else {
+                tv_error.setVisibility(View.GONE);
+                tv_error.setText(null);
+            }
+        });
+
+        viewModel.getLoading().observe(this, isLoading -> {
+            if(isLoading) {
+                loading_view.setVisibility(View.VISIBLE);
+                recycler_view.setVisibility(View.GONE);
+            } else {
+                loading_view.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
