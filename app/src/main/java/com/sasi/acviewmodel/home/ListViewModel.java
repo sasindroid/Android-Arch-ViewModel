@@ -20,6 +20,7 @@ import retrofit2.Response;
 
 public class ListViewModel extends ViewModel {
 
+    private static final String TAG = "ListViewModel";
     private final MutableLiveData<List<Repo>> repos = new MutableLiveData<>();
     private final MutableLiveData<Boolean> repoLoadError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>();
@@ -44,6 +45,8 @@ public class ListViewModel extends ViewModel {
 
     private void fetchRepos() {
 
+        Log.d(TAG, "fetchRepos");
+
         // Set an initial value.
         loading.setValue(true);
 
@@ -54,6 +57,9 @@ public class ListViewModel extends ViewModel {
         repoCall.enqueue(new Callback<List<Repo>>() {
             @Override
             public void onResponse(Call<List<Repo>> call, Response<List<Repo>> response) {
+
+                Log.d(TAG, "response: " + response.body().size());
+
                 repoLoadError.setValue(false);
                 repos.setValue(response.body());
                 loading.setValue(false);
