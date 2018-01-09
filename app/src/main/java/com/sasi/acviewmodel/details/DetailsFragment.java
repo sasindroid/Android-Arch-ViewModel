@@ -1,5 +1,6 @@
 package com.sasi.acviewmodel.details;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sasi.acviewmodel.R;
+import com.sasi.acviewmodel.home.SelectedRepoViewModel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -22,10 +24,16 @@ public class DetailsFragment extends Fragment {
 
     private Unbinder unbinder;
 
-    @BindView(R.id.tv_repo_name) TextView tv_repo_name;
-    @BindView(R.id.tv_repo_description) TextView tv_repo_description;
-    @BindView(R.id.tv_forks) TextView tv_forks;
-    @BindView(R.id.tv_stars) TextView tv_stars;
+    @BindView(R.id.tv_repo_name)
+    TextView tv_repo_name;
+    @BindView(R.id.tv_repo_description)
+    TextView tv_repo_description;
+    @BindView(R.id.tv_forks)
+    TextView tv_forks;
+    @BindView(R.id.tv_stars)
+    TextView tv_stars;
+
+    SelectedRepoViewModel selectedRepoViewModel;
 
     @Nullable
     @Override
@@ -38,18 +46,39 @@ public class DetailsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+        selectedRepoViewModel = ViewModelProviders.of(getActivity()).get(SelectedRepoViewModel.class);
+
+        // Initially try to get from SavedInstance if savedInstance is not null.
+        selectedRepoViewModel.restoreFromBundle(savedInstanceState);
+
         displayRepo();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        selectedRepoViewModel.saveToBundle(outState);
     }
 
     private void displayRepo() {
 
+        selectedRepoViewModel.getSelectedRepo().observe(this, repo -> {
+            if (repo != null) {
+                tv_repo_name.setText(repo.name);
+                tv_repo_description.setText(repo.description);
+                tv_forks.setText(String.valueOf(repo.forks));
+                tv_stars.setText(String.valueOf(repo.stars));
+            }
+        });
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
 
-        if(unbinder != null) {
+        if (unbinder != null) {
             unbinder.unbind();
             unbinder = null;
         }

@@ -15,6 +15,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sasi.acviewmodel.R;
+import com.sasi.acviewmodel.details.DetailsFragment;
+import com.sasi.acviewmodel.model.Repo;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,7 +26,7 @@ import butterknife.Unbinder;
  * Created by sasikumar on 04/01/2018.
  */
 
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment implements RepoSelectedListener {
 
     @BindView(R.id.recycler_view)
     RecyclerView listview;
@@ -69,11 +71,26 @@ public class ListFragment extends Fragment {
         listview.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 
         // Set adapter.
-        listview.setAdapter(new RepoListAdapter(viewModel, this));
+        listview.setAdapter(new RepoListAdapter(viewModel, this, this));
         listview.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // This method will listen/observe changes coming from LiveData.
         observeViewModel();
+    }
+
+    @Override
+    public void onRepoSelected(Repo repo) {
+
+        // Get the ViewModel to the Activity scope.
+        SelectedRepoViewModel selectedRepoViewModel = ViewModelProviders.of(getActivity()).get(SelectedRepoViewModel.class);
+        selectedRepoViewModel.setSelectedRepo(repo);
+
+        // Go to DetailsFragment
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.screen_container, new DetailsFragment())
+                // Add the Listfragment to the backstack.
+                .addToBackStack(null)
+                .commit();
     }
 
     private void observeViewModel() {

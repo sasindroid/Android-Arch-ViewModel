@@ -23,11 +23,13 @@ import butterknife.ButterKnife;
 public class RepoListAdapter extends RecyclerView.Adapter<RepoListAdapter.RepoViewHolder> {
 
     private static final String TAG = "RepoListAdapter";
+    private final RepoSelectedListener repoSelectedListener;
     private List<Repo> data = new ArrayList<>();
 
     // We can use listViewModel to observe the LiveData.
     // We can use the lifecycleOwner to unbind from the observer when the owner is destroyed (fragment).
-    public RepoListAdapter(ListViewModel listViewModel, LifecycleOwner lifecycleOwner) {
+    public RepoListAdapter(ListViewModel listViewModel, LifecycleOwner lifecycleOwner, RepoSelectedListener repoSelectedListener) {
+        this.repoSelectedListener = repoSelectedListener;
 
         listViewModel.getRepos().observe(lifecycleOwner, repos -> {
 
@@ -48,7 +50,7 @@ public class RepoListAdapter extends RecyclerView.Adapter<RepoListAdapter.RepoVi
     @Override
     public RepoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_repo_list_item, parent, false);
-        return new RepoViewHolder(view);
+        return new RepoViewHolder(view, repoSelectedListener);
     }
 
     @Override
@@ -80,12 +82,21 @@ public class RepoListAdapter extends RecyclerView.Adapter<RepoListAdapter.RepoVi
         @BindView(R.id.tv_stars)
         TextView tv_stars;
 
-        RepoViewHolder(View itemView) {
+        Repo repo;
+
+        RepoViewHolder(View itemView, RepoSelectedListener repoSelectedListener) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(view -> {
+                if (repo != null) {
+                    repoSelectedListener.onRepoSelected(repo);
+                }
+            });
         }
 
         void bind(Repo repo) {
+            this.repo = repo;
             tv_repo_name.setText(repo.name);
             tv_repo_description.setText(repo.description);
             tv_forks.setText(String.valueOf(repo.forks));
