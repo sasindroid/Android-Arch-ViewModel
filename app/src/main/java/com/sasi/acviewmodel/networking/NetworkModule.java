@@ -24,4 +24,10 @@ public abstract class NetworkModule {
                 .addConverterFactory(MoshiConverterFactory.create())
                 .build();
     }
+
+    @Provides
+    @Singleton
+    static RepoService providesRepoService(Retrofit retrofit) {
+        return retrofit.create(RepoService.class);
+    }
 }

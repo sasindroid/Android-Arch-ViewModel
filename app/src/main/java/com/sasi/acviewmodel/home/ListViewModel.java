@@ -6,7 +6,7 @@ import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
 import com.sasi.acviewmodel.model.Repo;
-import com.sasi.acviewmodel.networking.RepoApi;
+import com.sasi.acviewmodel.networking.RepoService;
 
 import java.util.List;
 
@@ -28,9 +28,11 @@ public class ListViewModel extends ViewModel {
     private final MutableLiveData<Boolean> loading = new MutableLiveData<>();
 
     private Call<List<Repo>> repoCall;
+    private RepoService repoService;
 
     @Inject
-    public ListViewModel() {
+    public ListViewModel(RepoService repoService) {
+        this.repoService = repoService;
         fetchRepos();
     }
 
@@ -54,7 +56,7 @@ public class ListViewModel extends ViewModel {
         loading.setValue(true);
 
         // Get the Retrofit to return a callback.
-        repoCall = RepoApi.getInstance().getRepositories();
+        repoCall = repoService.getRepositories();
 
         // Use the callback and make a network request.
         repoCall.enqueue(new Callback<List<Repo>>() {

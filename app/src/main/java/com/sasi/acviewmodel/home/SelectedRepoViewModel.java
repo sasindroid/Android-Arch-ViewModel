@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.sasi.acviewmodel.model.Repo;
-import com.sasi.acviewmodel.networking.RepoApi;
+import com.sasi.acviewmodel.networking.RepoService;
 
 import javax.inject.Inject;
 
@@ -25,9 +25,11 @@ public class SelectedRepoViewModel extends ViewModel {
     private final MutableLiveData<Repo> selectedRepo = new MutableLiveData<>();
     private final String REPO_DETAILS = "repo_details";
     private Call<Repo> repoCall;
+    private RepoService repoService;
 
     @Inject
-    public SelectedRepoViewModel() {
+    public SelectedRepoViewModel(RepoService repoService) {
+        this.repoService = repoService;
     }
 
     public LiveData<Repo> getSelectedRepo() {
@@ -59,7 +61,7 @@ public class SelectedRepoViewModel extends ViewModel {
     // Ideally this can be retrieving data from a database or making a network call.
     private void loadRepo(String repoOwner, String repoName) {
 
-        repoCall = RepoApi.getInstance().getRepo(repoOwner, repoName);
+        repoCall = repoService.getRepo(repoOwner, repoName);
 
         repoCall.enqueue(new Callback<Repo>() {
             @Override
