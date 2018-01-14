@@ -1,6 +1,7 @@
 package com.sasi.acviewmodel.home;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,8 +16,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sasi.acviewmodel.R;
+import com.sasi.acviewmodel.base.MyApplication;
 import com.sasi.acviewmodel.details.DetailsFragment;
 import com.sasi.acviewmodel.model.Repo;
+import com.sasi.acviewmodel.viewmodel.ViewModelFactory;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,6 +32,9 @@ import butterknife.Unbinder;
  */
 
 public class ListFragment extends Fragment implements RepoSelectedListener {
+
+    @Inject
+    ViewModelFactory viewModelFactory;
 
     @BindView(R.id.recycler_view)
     RecyclerView listview;
@@ -41,6 +49,13 @@ public class ListFragment extends Fragment implements RepoSelectedListener {
     private ListViewModel viewModel;
 
     private final static String TAG = "ListFragment";
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        MyApplication.getApplicationComponent(context).inject(this);
+    }
 
     @Nullable
     @Override
@@ -65,7 +80,7 @@ public class ListFragment extends Fragment implements RepoSelectedListener {
 
     private void setupData() {
 
-        viewModel = ViewModelProviders.of(this).get(ListViewModel.class);
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(ListViewModel.class);
 
         // Add some dividers in the list.
         listview.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
@@ -82,7 +97,7 @@ public class ListFragment extends Fragment implements RepoSelectedListener {
     public void onRepoSelected(Repo repo) {
 
         // Get the ViewModel to the Activity scope.
-        SelectedRepoViewModel selectedRepoViewModel = ViewModelProviders.of(getActivity()).get(SelectedRepoViewModel.class);
+        SelectedRepoViewModel selectedRepoViewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(SelectedRepoViewModel.class);
         selectedRepoViewModel.setSelectedRepo(repo);
 
         // Go to DetailsFragment

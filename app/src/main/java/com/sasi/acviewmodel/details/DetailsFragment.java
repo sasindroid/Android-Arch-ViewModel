@@ -1,6 +1,7 @@
 package com.sasi.acviewmodel.details;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,7 +11,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.sasi.acviewmodel.R;
+import com.sasi.acviewmodel.base.MyApplication;
 import com.sasi.acviewmodel.home.SelectedRepoViewModel;
+import com.sasi.acviewmodel.viewmodel.ViewModelFactory;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,6 +29,9 @@ public class DetailsFragment extends Fragment {
 
     private Unbinder unbinder;
 
+    @Inject
+    ViewModelFactory viewModelFactory;
+
     @BindView(R.id.tv_repo_name)
     TextView tv_repo_name;
     @BindView(R.id.tv_repo_description)
@@ -34,6 +42,13 @@ public class DetailsFragment extends Fragment {
     TextView tv_stars;
 
     SelectedRepoViewModel selectedRepoViewModel;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        MyApplication.getApplicationComponent(context).inject(this);
+    }
 
     @Nullable
     @Override
@@ -47,7 +62,7 @@ public class DetailsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
-        selectedRepoViewModel = ViewModelProviders.of(getActivity()).get(SelectedRepoViewModel.class);
+        selectedRepoViewModel = ViewModelProviders.of(getActivity(), viewModelFactory).get(SelectedRepoViewModel.class);
 
         // Initially try to get from SavedInstance if savedInstance is not null.
         selectedRepoViewModel.restoreFromBundle(savedInstanceState);

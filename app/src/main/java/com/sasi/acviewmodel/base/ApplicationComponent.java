@@ -1,5 +1,7 @@
 package com.sasi.acviewmodel.base;
 
+import com.sasi.acviewmodel.details.DetailsFragment;
+import com.sasi.acviewmodel.home.ListFragment;
 import com.sasi.acviewmodel.networking.NetworkModule;
 import com.sasi.acviewmodel.viewmodel.ViewModelModule;
 
@@ -18,4 +20,7 @@ import dagger.Component;
 })
 public interface ApplicationComponent {
 
+    void inject(ListFragment listFragment);
+
+    void inject(DetailsFragment detailsFragment);
 }
