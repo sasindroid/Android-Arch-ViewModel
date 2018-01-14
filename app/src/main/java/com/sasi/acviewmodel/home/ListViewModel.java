@@ -10,6 +10,8 @@ import com.sasi.acviewmodel.networking.RepoApi;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,6 +29,7 @@ public class ListViewModel extends ViewModel {
 
     private Call<List<Repo>> repoCall;
 
+    @Inject
     public ListViewModel() {
         fetchRepos();
     }

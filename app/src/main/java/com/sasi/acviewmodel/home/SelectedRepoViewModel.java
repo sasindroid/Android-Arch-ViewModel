@@ -9,6 +9,8 @@ import android.util.Log;
 import com.sasi.acviewmodel.model.Repo;
 import com.sasi.acviewmodel.networking.RepoApi;
 
+import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -23,6 +25,10 @@ public class SelectedRepoViewModel extends ViewModel {
     private final MutableLiveData<Repo> selectedRepo = new MutableLiveData<>();
     private final String REPO_DETAILS = "repo_details";
     private Call<Repo> repoCall;
+
+    @Inject
+    public SelectedRepoViewModel() {
+    }
 
     public LiveData<Repo> getSelectedRepo() {
         return selectedRepo;
